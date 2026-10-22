@@ -1,5 +1,7 @@
 # delivery-api
 
+[![CI](https://github.com/aizenix/delivery-api/actions/workflows/ci.yml/badge.svg)](https://github.com/aizenix/delivery-api/actions/workflows/ci.yml)
+
 Order and delivery backend for a local business: customers order from a catalog and pay online, couriers pick orders up and deliver them. It follows the structure of a delivery service I built in Tashkent, without the client-specific parts.
 
 Stack: Python 3.12+, FastAPI, SQLAlchemy 2 (async, asyncpg), Alembic, PostgreSQL 16 + PostGIS, Redis, Celery + beat, SQLAdmin, pytest, ruff.
