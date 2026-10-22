@@ -23,5 +23,11 @@ class Settings(BaseSettings):
     sms_gateway_token: str = ""
     sms_sender: str = "Delivery"
 
+    payment_secret: str = "dev-payment-secret-change-me"
+    payment_checkout_url: str = "https://checkout.example.com/pay"
+
+    telegram_bot_token: str = ""
+    courier_notify_radius_m: int = 5000
+
 
 settings = Settings()

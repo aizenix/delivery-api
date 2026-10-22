@@ -4,7 +4,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 
-from app.api import auth, catalog, health, orders, zones
+from app.api import auth, catalog, health, orders, payments, zones
 from app.db import engine, redis
 from app.errors import AppError
 
@@ -31,3 +31,4 @@ app.include_router(auth.router)
 app.include_router(catalog.router)
 app.include_router(zones.router)
 app.include_router(orders.router)
+app.include_router(payments.router)
