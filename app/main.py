@@ -4,7 +4,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 
-from app.api import health
+from app.api import auth, health
 from app.db import engine, redis
 from app.errors import AppError
 
@@ -27,3 +27,4 @@ async def handle_app_error(request: Request, exc: AppError) -> JSONResponse:
 
 
 app.include_router(health.router)
+app.include_router(auth.router)
