@@ -30,5 +30,8 @@ class Settings(BaseSettings):
     telegram_bot_token: str = ""
     courier_notify_radius_m: int = 5000
 
+    admin_username: str = "admin"
+    admin_password: str = "admin"
+
 
 settings = Settings()
