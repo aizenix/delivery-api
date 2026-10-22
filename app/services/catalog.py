@@ -94,4 +94,4 @@ async def _ensure_categories(session: AsyncSession, names: set[str]) -> dict[str
     result = await session.execute(
         select(Category.name, Category.id).where(Category.name.in_(names))
     )
-    return dict(result.tuples().all())
+    return dict(result.all())
