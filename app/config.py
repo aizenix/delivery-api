@@ -25,6 +25,7 @@ class Settings(BaseSettings):
 
     payment_secret: str = "dev-payment-secret-change-me"
     payment_checkout_url: str = "https://checkout.example.com/pay"
+    unpaid_order_minutes: int = 15
 
     telegram_bot_token: str = ""
     courier_notify_radius_m: int = 5000

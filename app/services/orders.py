@@ -1,4 +1,4 @@
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -111,3 +111,19 @@ async def cancel_order(session: AsyncSession, user: User, order_id: int) -> Orde
     change_status(order, OrderStatus.cancelled)
     await session.commit()
     return order
+
+
+async def cancel_expired_orders(session: AsyncSession, max_age: timedelta) -> list[int]:
+    cutoff = datetime.now(UTC) - max_age
+    # rows locked by an in-flight payment webhook are skipped and picked up on the next run
+    orders = await session.scalars(
+        select(Order)
+        .where(Order.status == OrderStatus.created, Order.created_at < cutoff)
+        .with_for_update(skip_locked=True)
+    )
+    cancelled = []
+    for order in orders:
+        change_status(order, OrderStatus.cancelled)
+        cancelled.append(order.id)
+    await session.commit()
+    return cancelled

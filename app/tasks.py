@@ -2,6 +2,7 @@ import asyncio
 import logging
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
+from datetime import timedelta
 
 import httpx
 from celery import Celery
@@ -12,6 +13,7 @@ from app import telegram
 from app.config import settings
 from app.models import Order, OrderStatus
 from app.services.couriers import couriers_near
+from app.services.orders import cancel_expired_orders
 from app.sms import get_sms_client
 
 logger = logging.getLogger(__name__)
@@ -21,6 +23,9 @@ celery_app.conf.update(
     task_ignore_result=True,
     broker_connection_retry_on_startup=True,
     timezone="UTC",
+    beat_schedule={
+        "cancel-unpaid-orders": {"task": "app.tasks.cancel_unpaid_orders", "schedule": 60.0},
+    },
 )
 
 
@@ -62,3 +67,17 @@ def notify_couriers(order_id: int) -> None:
             telegram.send_message(chat_id, text)
         except httpx.HTTPError:
             logger.exception("failed to notify courier chat %s about order %s", chat_id, order.id)
+
+
+async def _cancel_unpaid() -> list[int]:
+    async with task_session() as session:
+        return await cancel_expired_orders(
+            session, timedelta(minutes=settings.unpaid_order_minutes)
+        )
+
+
+@celery_app.task
+def cancel_unpaid_orders() -> None:
+    cancelled = asyncio.run(_cancel_unpaid())
+    if cancelled:
+        logger.info("cancelled unpaid orders: %s", cancelled)
